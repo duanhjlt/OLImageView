@@ -14,6 +14,7 @@
     struct {
         unsigned int didLoop : 1;
         unsigned int shouldStartAnimating : 1;
+        unsigned int shouldLoop: 1;
     } _delegateFlags;
 }
 
@@ -83,6 +84,7 @@ const NSTimeInterval kMaxTimeStep = 1; // note: To avoid spiral-o-death
     _delegate = delegate;
     _delegateFlags.didLoop = [delegate respondsToSelector:@selector(imageViewDidLoop:)];
     _delegateFlags.shouldStartAnimating = [delegate respondsToSelector:@selector(imageViewShouldStartAnimating:)];
+    _delegateFlags.shouldLoop = [delegate respondsToSelector:@selector(imageViewShouldLoop:)];
 }
 
 - (void)setImage:(UIImage *)image
@@ -276,5 +278,12 @@ break
     if (self.delegate && _delegateFlags.didLoop) {
         [self.delegate imageViewDidLoop:self];
     }
+}
+
+- (BOOL)delegateShouldLoop {
+    if (self.delegate && _delegateFlags.shouldLoop) {
+        return [self.delegate imageViewShouldLoop:self];
+    }
+    return YES;
 }
 @end
